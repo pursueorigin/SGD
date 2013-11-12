@@ -1,0 +1,52 @@
+-*- mode:org; -*-
+
+* setting up the environment
+** start
+export DEVROOT=~/scratch/sgd
+export LIBROOT="${DEVROOT}/lib"
+mkdir -p "${LIBROOT}"
+
+** pfunc
+cd "${LIBROOT}"
+wget http://www.cmake.org/files/v2.8/cmake-2.8.8-Linux-i386.sh
+chmod a+x ./cmake-2.8.8-Linux-i386.sh
+./cmake-2.8.8-Linux-i386.sh
+
+svn checkout https://projects.coin-or.org/svn/PFunc/trunk/ pfunc-src
+mkdir pfunc
+cd pfunc-src
+../cmake-2.8.8-Linux-i386/bin/cmake "${LIBROOT}/pfunc-src" -DCMAKE_INSTALL_PREFIX="${LIBROOT}/pfunc" -DBUILD_EXAMPLES=ON
+make install
+
+make examples
+examples/c/simple
+examples/c/groups
+
+** boost
+cd "${LIBROOT}"
+wget http://downloads.sourceforge.net/project/boost/boost/1.50.0/boost_1_50_0.tar.gz
+tar xf boost_1_50_0.tar.gz
+ln -s boost_1_50_0 boost
+
+** source code
+export SVNUSER=adruins
+cd "${DEVROOT}"
+svn co svn+ssh://${SVNUSER}@dci1.watson.ibm.com/gsa/yktgsa/projects/r/research/svn/trunk/SGD
+
+It's necessary to have /usr/gnu/bin/svnserve in the user's path in
+noninteractive ssh sessions. The way to accomplish this is to change shell to
+tcsh and change .tcsh.mine by adding
+
+   setenv PATH /usr/gnu/bin:${PATH}
+
+* building and running
+export REPOROOT="${DEVROOT}/SGD"
+export SRCROOT="${REPOROOT}/cpp"
+cd ${SRCROOT}
+CPATH="${LIBROOT}/pfunc/include":"${LIBROOT}/boost" make harness-dbg
+./harness-dbg num-threads 1 \
+	      max-epochs 1 \
+	      epoch-size 10 \
+	      A-file-path input/bcsstk03-112-640.mtx \
+	      Y-file-path input/y-112.txt \
+              M 112

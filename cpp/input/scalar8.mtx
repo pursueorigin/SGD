@@ -1,0 +1,11 @@
+%%MatrixMarket matrix coordinate real symmetric
+% order-8 "scalar 0.125"
+8 8 8
+1 1 0.125
+2 2 0.125
+3 3 0.125
+4 4 0.125
+5 5 0.125
+6 6 0.125
+7 7 0.125
+8 8 0.125
